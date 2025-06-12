@@ -754,6 +754,8 @@ internal open class UniffiVTableCallbackInterfaceRelay(
 
 
 
+
+
 // A JNA Library to expose the extern-C FFI definitions.
 // This is an implementation detail which will be called internally by the public API.
 
@@ -790,6 +792,8 @@ internal interface UniffiLib : Library {
     ): RustBuffer.ByValue
     fun uniffi_uney_chat_sdk_uniffi_fn_func_e2ee_init(`clientUniqueId`: RustBuffer.ByValue,`storagePath`: RustBuffer.ByValue,`encryptionKey`: RustBuffer.ByValue,`casBaseUrl`: RustBuffer.ByValue,`tracingLevel`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
+    fun uniffi_uney_chat_sdk_uniffi_fn_func_e2ee_send_event(`eventType`: RustBuffer.ByValue,`eventPayload`: RustBuffer.ByValue,uniffi_out_err: UniffiRustCallStatus, 
+    ): RustBuffer.ByValue
     fun uniffi_uney_chat_sdk_uniffi_fn_func_e2ee_set_http_relay_callback(`callback`: Pointer,uniffi_out_err: UniffiRustCallStatus, 
     ): Unit
     fun uniffi_uney_chat_sdk_uniffi_fn_func_onboarding_create_otp_keys(uniffi_out_err: UniffiRustCallStatus, 
@@ -920,6 +924,8 @@ internal interface UniffiLib : Library {
     ): Short
     fun uniffi_uney_chat_sdk_uniffi_checksum_func_e2ee_init(
     ): Short
+    fun uniffi_uney_chat_sdk_uniffi_checksum_func_e2ee_send_event(
+    ): Short
     fun uniffi_uney_chat_sdk_uniffi_checksum_func_e2ee_set_http_relay_callback(
     ): Short
     fun uniffi_uney_chat_sdk_uniffi_checksum_func_onboarding_create_otp_keys(
@@ -959,6 +965,9 @@ private fun uniffiCheckApiChecksums(lib: UniffiLib) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_uney_chat_sdk_uniffi_checksum_func_e2ee_init() != 7586.toShort()) {
+        throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
+    }
+    if (lib.uniffi_uney_chat_sdk_uniffi_checksum_func_e2ee_send_event() != 49001.toShort()) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
     if (lib.uniffi_uney_chat_sdk_uniffi_checksum_func_e2ee_set_http_relay_callback() != 23807.toShort()) {
@@ -1870,6 +1879,16 @@ public object FfiConverterMapStringString: FfiConverterRustBuffer<Map<kotlin.Str
         FfiConverterString.lower(`clientUniqueId`),FfiConverterString.lower(`storagePath`),FfiConverterString.lower(`encryptionKey`),FfiConverterString.lower(`casBaseUrl`),FfiConverterString.lower(`tracingLevel`),_status)
 }
     
+    
+
+    @Throws(SdkException::class) fun `e2eeSendEvent`(`eventType`: kotlin.String, `eventPayload`: kotlin.String): kotlin.String {
+            return FfiConverterString.lift(
+    uniffiRustCallWithError(SdkException) { _status ->
+    UniffiLib.INSTANCE.uniffi_uney_chat_sdk_uniffi_fn_func_e2ee_send_event(
+        FfiConverterString.lower(`eventType`),FfiConverterString.lower(`eventPayload`),_status)
+}
+    )
+    }
     
 
     @Throws(SdkException::class) fun `e2eeSetHttpRelayCallback`(`callback`: Relay)

@@ -51,4 +51,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.kotlinx.serialization.json)
+
+    //reactive x
+    implementation (libs.rxandroid)
+    implementation (libs.rxjava)
 }

@@ -1,6 +1,10 @@
 package com.uney.android.mls.mlswrapper
 
-class Methods {
+import javax.inject.Inject
+
+class Methods @Inject constructor(
+    private val bridge: Bridge
+) {
     /**
      * Generates a new key bundle and uploads it to the server.
      */

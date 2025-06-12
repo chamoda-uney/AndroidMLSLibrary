@@ -1,8 +1,9 @@
 package com.uney.android.mls.mlswrapper
 
 import android.util.Log
+import javax.inject.Inject
 
-class Logger(val context: String) {
+class Logger @Inject constructor(val context: String) {
 
     fun debug(vararg args: String) {
         Log.d(context, "[DEBUG] ${args.joinToString(" ")}")

@@ -55,4 +55,7 @@ dependencies {
     //reactive x
     implementation (libs.rxandroid)
     implementation (libs.rxjava)
+
+    //HTTP
+    implementation(libs.okhttp)
 }

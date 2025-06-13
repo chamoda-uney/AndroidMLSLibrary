@@ -1,9 +1,24 @@
 package com.uney.android.mls.mlswrapper
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.encodeToJsonElement
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
 import javax.inject.Inject
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class Methods @Inject constructor(
-    private val bridge: Bridge
+    private val bridge: Bridge,
+    private val casHttpClient: CASHttpClient,
 ) {
     /**
      * Generates a new key bundle and uploads it to the server.
@@ -123,5 +138,44 @@ class Methods @Inject constructor(
                 groupUuid = groupUuid
             )
         )
+    }
+
+    /**
+     * Temporarily registers a user on the CAS server.
+     *
+     * This method sends a POST request to the CAS server to create a new user with the specified client ID and user ID.
+     * @deprecated This method is deprecated and will be removed in a future version.
+     * @param clientId The client ID for the user to be registered.
+     * @param userId The user ID for the user to be registered.
+     */
+
+    suspend fun tempRegisterUserOnCAS(clientId: String, userId: String) {
+        val encoded = Json.encodeToString(JsonObject.serializer(), buildJsonObject {
+            put("clientId", Json.encodeToJsonElement(clientId))
+            put("userId", Json.encodeToJsonElement(userId))
+        })
+
+        val requestBody = encoded.toRequestBody("application/json".toMediaType())
+        suspendCoroutine { continuation ->
+            casHttpClient.instance.newCall(
+                Request.Builder()
+                    .post(requestBody)
+                    .url("/public/api/v1/users")
+                    .addHeader("x-kchat-correlation-id", "d6ba2f37-a9a1-4e5a-8132-9cb452a20856")
+                    .build()
+            ).enqueue(object : okhttp3.Callback {
+                override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {
+                    continuation.resumeWithException(e)
+                }
+
+                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                    if (response.isSuccessful) {
+                        continuation.resume(Unit)
+                    } else {
+                        continuation.resumeWithException(Exception("Request failed with code ${response.code}"))
+                    }
+                }
+            })
+        }
     }
 }

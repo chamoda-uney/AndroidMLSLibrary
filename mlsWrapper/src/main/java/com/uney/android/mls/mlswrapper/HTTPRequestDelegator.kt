@@ -14,9 +14,11 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 @SuppressLint("CheckResult")
+@Singleton
 class HTTPRequestDelegator @Inject constructor(
     private val bridge: Bridge,
     private val bridgeMessageEvents: BridgeMessageEvent,

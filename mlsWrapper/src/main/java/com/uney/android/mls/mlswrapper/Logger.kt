@@ -2,7 +2,9 @@ package com.uney.android.mls.mlswrapper
 
 import android.util.Log
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class Logger @Inject constructor(val context: String = "Android") {
 
     fun debug(vararg args: String) {

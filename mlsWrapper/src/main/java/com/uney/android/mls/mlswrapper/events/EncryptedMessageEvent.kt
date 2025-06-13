@@ -7,7 +7,9 @@ import com.uney.android.mls.mlswrapper.ConsumedBridgeMessageTypes
 import com.uney.android.mls.mlswrapper.EncryptedMessage
 import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class EncryptedMessageEvent @Inject constructor(
     bridgeMessageEvent: BridgeMessageEvent
 ): BaseEvent<ConsumedBridgeMessage, EncryptedMessage> {

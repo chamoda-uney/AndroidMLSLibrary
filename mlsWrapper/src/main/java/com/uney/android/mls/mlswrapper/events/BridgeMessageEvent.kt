@@ -10,7 +10,9 @@ import io.reactivex.rxjava3.subjects.Subject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class BridgeMessageEvent @Inject constructor(
     private val logger: Logger
 ) : BaseEvent<String, ConsumedBridgeMessage> {

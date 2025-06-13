@@ -1,6 +1,5 @@
 package com.uney.android.mls.mlswrapper
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -8,14 +7,13 @@ import kotlinx.serialization.json.encodeToJsonElement
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okio.Buffer
 import javax.inject.Inject
-import kotlin.collections.component1
-import kotlin.collections.component2
+import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+@Singleton
 class Methods @Inject constructor(
     private val bridge: Bridge,
     private val casHttpClient: CASHttpClient,

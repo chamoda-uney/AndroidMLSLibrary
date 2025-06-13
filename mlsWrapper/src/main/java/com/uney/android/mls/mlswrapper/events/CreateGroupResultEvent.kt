@@ -6,7 +6,9 @@ import com.uney.android.mls.mlswrapper.ConsumedBridgeMessageTypes
 import com.uney.android.mls.mlswrapper.GroupCreateResult
 import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class CreateGroupResultEvent @Inject constructor(
     bridgeMessageEvent: BridgeMessageEvent
 ) :

@@ -10,17 +10,27 @@ import okio.Buffer
 import okio.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class CASHttpClient @Inject constructor(
-    private val logger: Logger
+    private val logger: Logger,
+    private val configuration: WrapperConfiguration
 ) {
     val instance: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(10000, TimeUnit.MILLISECONDS)// TODO use config
+        .connectTimeout(configuration.casTimeout, TimeUnit.MILLISECONDS)
         .addInterceptor { chain ->
-            //Attach access token
-            val token = "" //TODO get token from configuration
             val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
+
+            //prepend base URL
+            val originalUrl = originalRequest.url
+            val newUrl = configuration.casBaseUrl + originalUrl.pathSegments.joinToString("/")
+
+            //Attach access token
+            val token = configuration.onAccessTokenRequested()
+            val newRequest = originalRequest
+                .newBuilder()
+                .url(newUrl)
                 .header("Authorization", "Bearer $token")
                 .header("Content-Type", "application/json")
                 .build()

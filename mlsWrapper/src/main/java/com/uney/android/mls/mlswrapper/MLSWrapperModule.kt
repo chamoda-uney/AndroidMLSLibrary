@@ -33,4 +33,9 @@ object MLSWrapperModule {
         return MLSWrapper(config, methods, events)
     }
 
+    @Provides
+    fun provideMLSWrapperModule(): MLSWrapperModule {
+        return this
+    }
+
 }

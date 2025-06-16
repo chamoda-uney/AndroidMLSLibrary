@@ -5,7 +5,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Logger @Inject constructor(val context: String = "Android") {
+class Logger @Inject constructor() {
+
+    val context = "ANDROID"
 
     fun debug(vararg args: String) {
         Log.d(context, "[DEBUG] ${args.joinToString(" ")}")

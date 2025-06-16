@@ -28,9 +28,16 @@ class MainApplication : Application() {
 class WrapperConfigurationImpl : WrapperConfiguration {
     override val casBaseUrl: String = BuildConfig.CAS_BASE_URL
     override val casTimeout: Long = 10_000 // 30 seconds in milliseconds
-    override val uniqueClientId: String = "client_app_123"
+    override val uniqueClientId: String = this.getDecodedJwtValue("uniqueDeviceId")
     override var cryptoStoragePath: String = ""
     override val onAccessTokenRequested: () -> String = {
         BuildConfig.MOCK_ACCESS_TOKEN
+    }
+
+
+    private fun getDecodedJwtValue(key: String): String {
+        val decodedJWT = decodeJwt(BuildConfig.MOCK_ACCESS_TOKEN)
+        val uniqueClientId = decodedJWT.payload[key] as? String
+        return uniqueClientId.toString()
     }
 }

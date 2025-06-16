@@ -17,6 +17,8 @@ import kotlin.coroutines.suspendCoroutine
 class Methods @Inject constructor(
     private val bridge: Bridge,
     private val casHttpClient: CASHttpClient,
+    private val configuration: WrapperConfiguration
+
 ) {
     /**
      * Generates a new key bundle and uploads it to the server.
@@ -158,7 +160,7 @@ class Methods @Inject constructor(
             casHttpClient.instance.newCall(
                 Request.Builder()
                     .post(requestBody)
-                    .url("/public/api/v1/users")
+                    .url(configuration.casBaseUrl + "/public/api/v1/users")
                     .addHeader("x-kchat-correlation-id", "d6ba2f37-a9a1-4e5a-8132-9cb452a20856")
                     .build()
             ).enqueue(object : okhttp3.Callback {

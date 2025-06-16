@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.uney.android.mls.mlswrapper.MLSWrapper
 import com.uney.android.mls.mlswrappertestapp.ui.theme.AndroidMLSLibraryTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,8 +32,13 @@ class MainActivity : ComponentActivity() {
     lateinit var mlsWrapper: MLSWrapper
 
 
-    fun startMLS() {
+    suspend fun startMLS() {
         mlsWrapper.initlaize()// initialize
+
+        mlsWrapper.methods.tempRegisterUserOnCAS(
+            clientId = getDecodedJwtValue("uniqueDeviceId"),
+            userId = getDecodedJwtValue("sub")
+        )
     }
 
 
@@ -63,7 +71,10 @@ class MainActivity : ComponentActivity() {
                 enabled = true,
                 onClick = {
 
-                    startMLS()
+                    // Launch a coroutine to call the suspend function
+                    CoroutineScope(Dispatchers.Main).launch {
+                        startMLS()
+                    }
                 },
                 modifier = Modifier.padding(16.dp) // Optional: Add padding for better spacing
             ) {

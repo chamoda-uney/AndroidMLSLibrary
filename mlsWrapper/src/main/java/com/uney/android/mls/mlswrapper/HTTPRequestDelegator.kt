@@ -22,7 +22,9 @@ import javax.inject.Singleton
 class HTTPRequestDelegator @Inject constructor(
     private val bridge: Bridge,
     private val bridgeMessageEvents: BridgeMessageEvent,
-    private val httpService: CASHttpClient
+    private val httpService: CASHttpClient,
+    private val configuration: WrapperConfiguration
+
 ) {
     private val subject: Subject<ConsumedBridgeMessage> =
         PublishSubject.create<ConsumedBridgeMessage>().toSerialized()
@@ -63,7 +65,7 @@ class HTTPRequestDelegator @Inject constructor(
                     "GET" -> httpService.instance.newCall(
                         Request.Builder()
                             .get()
-                            .url(message.endPoint)
+                            .url(configuration.casBaseUrl + message.endPoint)
                             .apply {
                                 headers.forEach { (key, value) -> header(key, value) }
                             }
@@ -73,7 +75,7 @@ class HTTPRequestDelegator @Inject constructor(
                     "POST" -> httpService.instance.newCall(
                         Request.Builder()
                             .post(getApplicationJsonRequestBody(message.requestBody))
-                            .url(message.endPoint)
+                            .url(configuration.casBaseUrl + message.endPoint)
                             .apply {
                                 headers.forEach { (key, value) -> header(key, value) }
                             }
@@ -83,7 +85,7 @@ class HTTPRequestDelegator @Inject constructor(
                     "PUT" -> httpService.instance.newCall(
                         Request.Builder()
                             .put(getApplicationJsonRequestBody(message.requestBody))
-                            .url(message.endPoint)
+                            .url(configuration.casBaseUrl + message.endPoint)
                             .apply {
                                 headers.forEach { (key, value) -> header(key, value) }
                             }
@@ -93,7 +95,7 @@ class HTTPRequestDelegator @Inject constructor(
                     "DELETE" -> httpService.instance.newCall(
                         Request.Builder()
                             .delete(getApplicationJsonRequestBody(message.requestBody))
-                            .url(message.endPoint)
+                            .url(configuration.casBaseUrl + message.endPoint)
                             .apply {
                                 headers.forEach { (key, value) -> header(key, value) }
                             }

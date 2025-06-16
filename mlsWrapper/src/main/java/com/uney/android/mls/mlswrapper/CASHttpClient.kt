@@ -22,15 +22,11 @@ class CASHttpClient @Inject constructor(
         .addInterceptor { chain ->
             val originalRequest = chain.request()
 
-            //prepend base URL
-            val originalUrl = originalRequest.url
-            val newUrl = configuration.casBaseUrl + originalUrl.pathSegments.joinToString("/")
 
             //Attach access token
             val token = configuration.onAccessTokenRequested()
             val newRequest = originalRequest
                 .newBuilder()
-                .url(newUrl)
                 .header("Authorization", "Bearer $token")
                 .header("Content-Type", "application/json")
                 .build()

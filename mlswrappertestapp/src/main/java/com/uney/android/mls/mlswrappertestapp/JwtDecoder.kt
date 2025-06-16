@@ -1,10 +1,7 @@
 package com.uney.android.mls.mlswrappertestapp
 
-
+import kotlinx.serialization.json.*
 import java.util.Base64
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 
 // Represents a generic map for JWT payload
 typealias JwtPayload = Map<String, Any?>
@@ -60,7 +57,7 @@ fun decodeJwt(token: String): DecodedJwt {
             alg = headerJson["alg"]?.toString()
                 ?: throw IllegalArgumentException("Missing 'alg' in header"),
             typ = headerJson["typ"]?.toString(),
-            additional = headerJson.filter { it.key !in listOf("alg", "typ") }
+            additional = headerJson.filter { it.key !in listOf("alg", "typ") }.toMap()
         )
         val payload = payloadJson.toMap()
 
@@ -72,5 +69,34 @@ fun decodeJwt(token: String): DecodedJwt {
 
 // Extension function to convert JsonObject to Map<String, Any?>
 private fun JsonObject.toMap(): Map<String, Any?> {
-    return this.mapValues { it.value.toString() }
+    return this.mapValues { (_, value) ->
+        when (value) {
+            is JsonNull -> null
+            is JsonPrimitive -> when {
+                value.isString -> value.content
+                value.booleanOrNull != null -> value.boolean
+                value.longOrNull != null -> value.long
+                value.doubleOrNull != null -> value.double
+                else -> value.content
+            }
+            is JsonObject -> value.toMap()
+            is JsonArray -> value.map { it.toAny() }
+        }
+    }
+}
+
+// Helper function to convert JsonElement to Any?
+private fun JsonElement.toAny(): Any? {
+    return when (this) {
+        is JsonNull -> null
+        is JsonPrimitive -> when {
+            isString -> content
+            booleanOrNull != null -> boolean
+            longOrNull != null -> long
+            doubleOrNull != null -> double
+            else -> content
+        }
+        is JsonObject -> toMap()
+        is JsonArray -> map { it.toAny() }
+    }
 }

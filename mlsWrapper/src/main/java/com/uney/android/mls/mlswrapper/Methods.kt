@@ -1,9 +1,8 @@
 package com.uney.android.mls.mlswrapper
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.encodeToJsonElement
+
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -150,9 +149,9 @@ class Methods @Inject constructor(
      */
 
     suspend fun tempRegisterUserOnCAS(clientId: String, userId: String) {
-        val encoded = Json.encodeToString(JsonObject.serializer(), buildJsonObject {
-            put("clientId", Json.encodeToJsonElement(clientId))
-            put("userId", Json.encodeToJsonElement(userId))
+        val encoded = Gson().toJson(JsonObject().apply {
+            addProperty("clientId", clientId)
+            addProperty("userId", userId)
         })
 
         val requestBody = encoded.toRequestBody("application/json".toMediaType())

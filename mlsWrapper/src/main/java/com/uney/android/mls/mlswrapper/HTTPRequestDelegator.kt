@@ -1,12 +1,11 @@
 package com.uney.android.mls.mlswrapper
 
+
 import android.annotation.SuppressLint
+import com.google.gson.Gson
 import com.uney.android.mls.mlswrapper.events.BridgeMessageEvent
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.rxjava3.subjects.Subject
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.Json
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -35,14 +34,12 @@ class HTTPRequestDelegator @Inject constructor(
         }
 
         override fun onResponse(call: okhttp3.Call, response: Response) {
+            val gson = Gson()
             val responseBridgeMessage = HttpRelayResponse(
                 bridgeMessageType = ProducedBridgeMessageTypes.HTTP_RELAY_RESPONSE,
                 statusCode = response.code,
-                responseHeaders = Json.encodeToString(
-                    MapSerializer(String.serializer(), String.serializer()),
-                    response.headers.toMap()
-                ),
-                responseBody = response.body.toString()
+                responseHeaders = gson.toJson(response.headers.toMap()),
+                responseBody = response.body?.string() ?: ""
             )
             bridge.sendMessage(responseBridgeMessage)
         }
@@ -57,10 +54,14 @@ class HTTPRequestDelegator @Inject constructor(
             .filter { it.bridgeMessageType == ConsumedBridgeMessageTypes.HTTP_RELAY_REQUEST }
             .map { it as HttpRelayRequest }
             .subscribe { message ->
-                val headers: Map<String, String> = Json.decodeFromString(
-                    MapSerializer(String.serializer(), String.serializer()),
-                    message.requestHeaders
-                )
+                val headers: Map<String, String> = try {
+                    Gson().fromJson(
+                        message.requestHeaders,
+                        object : com.google.gson.reflect.TypeToken<Map<String, String>>() {}.type
+                    ) ?: emptyMap()
+                } catch (e: com.google.gson.JsonSyntaxException) {
+                    emptyMap() // or handle error as needed
+                }
                 when (message.method) {
                     "GET" -> httpService.instance.newCall(
                         Request.Builder()

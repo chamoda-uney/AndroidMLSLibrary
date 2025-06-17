@@ -1,9 +1,7 @@
 package com.uney.android.mls.mlswrapper
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.encodeToJsonElement
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okio.Buffer
@@ -21,7 +19,7 @@ class CASHttpClient @Inject constructor(
         .connectTimeout(configuration.casTimeout, TimeUnit.MILLISECONDS)
         .addInterceptor { chain ->
             val originalRequest = chain.request()
-
+            val gson = Gson()
 
             //Attach access token
             val token = configuration.onAccessTokenRequested()
@@ -34,15 +32,15 @@ class CASHttpClient @Inject constructor(
             // Log request
             logger.debug(
                 "CAS Request: ${
-                    Json.encodeToString(JsonObject.serializer(), buildJsonObject {
-                        put("headers", Json.encodeToJsonElement(newRequest.headers.toMultimap()))
-                        put("url", Json.encodeToJsonElement(newRequest.url.toString()))
-                        put("method", Json.encodeToJsonElement(newRequest.method))
+                    gson.toJson(JsonObject().apply {
+                        add("headers", gson.toJsonTree(newRequest.headers.toMultimap()))
+                        addProperty("url", newRequest.url.toString())
+                        addProperty("method", newRequest.method)
                         newRequest.body?.let { body ->
                             if (body.contentLength() > 0) {
                                 val buffer = Buffer()
                                 body.writeTo(buffer)
-                                put("body", Json.encodeToJsonElement(buffer.readUtf8()))
+                                addProperty("body", buffer.readUtf8())
                             }
                         }
                     })
@@ -52,35 +50,30 @@ class CASHttpClient @Inject constructor(
             try {
                 val response = chain.proceed(newRequest)
 
-                // Filter headers to keep only string values
-                val filteredHeaders = Headers.Builder().apply {
-                    response.headers.forEach { (key, value) ->
-                        if (value.isNotEmpty()) {
-                            add(key, value)
-                        }
-                    }
-                }.build()
+
 
                 // Log response
+                val gson = Gson()
                 logger.debug(
                     "CAS Response: ${
-                        Json.encodeToString(
-                            JsonObject.serializer(),
-                            buildJsonObject {
-                                put("status", Json.encodeToJsonElement(response.code))
-                                put(
-                                    "headers",
-                                    Json.encodeToJsonElement(filteredHeaders.toMultimap())
-                                )
-                                put("body", Json.encodeToJsonElement(response.body?.string()))
+                        gson.toJson(JsonObject().apply {
+                            addProperty("status", response.code)
+                            add("headers", gson.toJsonTree(response.headers.toMultimap()))
+                            response.let { response ->
+                                response.body?.contentLength()?.let {
+                                    if (it > 0) {
+                                        val buffer = Buffer()
+                                        buffer.write(response.body!!.bytes())
+                                        addProperty("body", buffer.readUtf8())
+                                    }
+                                }
                             }
-                        )
+                        })
                     }"
                 )
 
                 // Create new response with filtered headers
                 val newResponse = response.newBuilder()
-                    .headers(filteredHeaders)
                     .build()
 
                 // Handle non-500 errors as successful responses

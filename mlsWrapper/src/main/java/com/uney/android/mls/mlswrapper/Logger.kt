@@ -7,7 +7,7 @@ import javax.inject.Singleton
 @Singleton
 class Logger @Inject constructor() {
 
-    val context = "ANDROID"
+    val context = "ANDROID-MLS-WRAPPER"
 
     fun debug(vararg args: String) {
         Log.d(context, "[DEBUG] ${args.joinToString(" ")}")

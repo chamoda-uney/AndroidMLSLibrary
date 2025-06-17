@@ -9,7 +9,8 @@ import javax.inject.Singleton
 class MLSWrapper @Inject constructor(
     private val config: WrapperConfiguration,
     val methods: Methods,
-    val events: Events
+    val events: Events,
+    val httpRequestDelegator: HTTPRequestDelegator
 ) {
     fun initlaize() {
         e2eeInit(

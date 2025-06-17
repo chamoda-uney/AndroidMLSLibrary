@@ -28,9 +28,10 @@ object MLSWrapperModule {
     fun provideMLSWrapper(
         config: WrapperConfiguration,
         methods: Methods,
-        events: Events
+        events: Events,
+        httpRequestDelegator: HTTPRequestDelegator
     ): MLSWrapper {
-        return MLSWrapper(config, methods, events)
+        return MLSWrapper(config, methods, events, httpRequestDelegator)
     }
 
     @Provides

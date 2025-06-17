@@ -17,7 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.uney.android.mls.mlswrapper.BridgeMessageCodec
+import com.uney.android.mls.mlswrapper.HttpRelayResponse
 import com.uney.android.mls.mlswrapper.MLSWrapper
+import com.uney.android.mls.mlswrapper.ProducedBridgeMessageTypes
 import com.uney.android.mls.mlswrappertestapp.ui.theme.AndroidMLSLibraryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -39,6 +42,8 @@ class MainActivity : ComponentActivity() {
             clientId = getDecodedJwtValue("uniqueDeviceId"),
             userId = getDecodedJwtValue("sub")
         )
+
+        mlsWrapper.methods.uploadKeyBundles()
     }
 
 

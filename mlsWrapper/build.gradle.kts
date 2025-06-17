@@ -44,13 +44,14 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation (libs.gson)
+
     //UniFFI
     implementation ("net.java.dev.jna:jna:5.12.0@aar")// otherwise cannot resolve aar
 
     //coroutines
     implementation(libs.kotlinx.coroutines.core)
 
-    implementation(libs.kotlinx.serialization.json)
 
     //reactive x
     implementation(libs.rxandroid)

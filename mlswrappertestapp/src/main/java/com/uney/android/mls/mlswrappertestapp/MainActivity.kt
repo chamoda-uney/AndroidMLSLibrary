@@ -1,7 +1,6 @@
 package com.uney.android.mls.mlswrappertestapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,10 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.uney.android.mls.mlswrapper.BridgeMessageCodec
-import com.uney.android.mls.mlswrapper.HttpRelayResponse
+import com.uney.android.mls.mlswrapper.GroupType
+import com.uney.android.mls.mlswrapper.GroupVisibility
 import com.uney.android.mls.mlswrapper.MLSWrapper
-import com.uney.android.mls.mlswrapper.ProducedBridgeMessageTypes
 import com.uney.android.mls.mlswrappertestapp.ui.theme.AndroidMLSLibraryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +42,14 @@ class MainActivity : ComponentActivity() {
         )
 
         mlsWrapper.methods.uploadKeyBundles()
+
+        //create a group
+        mlsWrapper.methods.createGroup(
+            groupName = "sample group",
+            type = GroupType.MULTI,
+            visibility = GroupVisibility.PUBLIC,
+            users = listOf("93a885ef-fb5a-480b-9d32-1a793868459c")
+        )
     }
 
 
